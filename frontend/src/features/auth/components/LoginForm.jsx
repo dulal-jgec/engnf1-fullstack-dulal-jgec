@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
-import { LogIn, Loader2 } from "lucide-react";
+import { LogIn, Loader2, User, ShieldCheck } from "lucide-react";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -18,17 +18,10 @@ export default function LoginForm() {
 
     try {
       const response = await api.post("/auth/login", { email, password });
-
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
-
       toast.success("Login successful!");
-
-      if (response.data.user.role === "ADMIN") {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/dashboard");
-      }
+      router.push("/dashboard");
     } catch (error) {
       toast.error(
         error.response?.data?.error?.message || "Invalid credentials",
@@ -38,22 +31,42 @@ export default function LoginForm() {
     }
   };
 
+  // Auto-fill Functions
+  const fillAdmin = () => {
+    setEmail("admin@triagesync.test");
+    setPassword("Admin@123");
+    toast.info("Admin credentials filled!");
+  };
+
+  const fillUser = () => {
+    setEmail("user@triagesync.test");
+    setPassword("User@123");
+    toast.info("User credentials filled!");
+  };
+
   return (
-    <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+    <div className="w-full max-w-md bg-white/90 backdrop-blur-md rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-8 border border-white">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">TriageSync</h1>
-        <p className="text-gray-500 mt-2">Sign in to your account</p>
+        <div className="w-16 h-16 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <ShieldCheck className="w-8 h-8" />
+        </div>
+        <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">
+          TriageSync
+        </h1>
+        <p className="text-slate-500 mt-2 font-medium">
+          Sign in to manage your tickets
+        </p>
       </div>
 
-      <form onSubmit={handleLogin} className="space-y-6">
+      <form onSubmit={handleLogin} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-slate-700 mb-1">
             Email
           </label>
           <input
             type="email"
             required
-            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all bg-slate-50 focus:bg-white"
             placeholder="admin@triagesync.test"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -61,13 +74,13 @@ export default function LoginForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-slate-700 mb-1">
             Password
           </label>
           <input
             type="password"
             required
-            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all bg-slate-50 focus:bg-white"
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -77,23 +90,40 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+          className="w-full flex justify-center py-3 px-4 rounded-xl shadow-md text-sm font-bold text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-green-200 disabled:opacity-50 transition-all mt-2"
         >
           {loading ? (
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
             <>
               <LogIn className="w-5 h-5 mr-2" />
-              Sign in
+              Sign In
             </>
           )}
         </button>
       </form>
 
-      <div className="mt-6 text-center text-sm text-gray-500">
-        <p>Test Credentials:</p>
-        <p>Admin: admin@triagesync.test / Admin@123</p>
-        <p>User: user@triagesync.test / User@123</p>
+      {/* Auto-Fill Section */}
+      <div className="mt-8">
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-3">
+          Quick Fill Credentials
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={fillAdmin}
+            type="button"
+            className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-sky-50 text-sky-700 border border-sky-200 rounded-lg hover:bg-sky-100 transition-colors text-sm font-semibold"
+          >
+            <User className="w-4 h-4" /> Admin
+          </button>
+          <button
+            onClick={fillUser}
+            type="button"
+            className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-lg hover:bg-yellow-100 transition-colors text-sm font-semibold"
+          >
+            <User className="w-4 h-4" /> User
+          </button>
+        </div>
       </div>
     </div>
   );
