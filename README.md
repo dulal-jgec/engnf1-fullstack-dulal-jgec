@@ -22,7 +22,7 @@ Coming soon. Deployment is in progress; links will be added here before the dead
 | Part | URL |
 |---|---|
 | Frontend | Coming soon |
-| Backend API base | Coming soon |
+| Backend API base | Coming soon | 
 | Database | Hosted PostgreSQL (Coming soon) |
 | Repository | `https://github.com/dulal-jgec/engnf1-fullstack-dulal-jgec` |
 
